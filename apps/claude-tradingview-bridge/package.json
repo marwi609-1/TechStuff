@@ -1,0 +1,15 @@
+{
+  "name": "claude-tradingview-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Demo MVP: Claude-style agent ↔ TradingView chart context → Pine Script draft + lint",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/server.ts",
+    "start": "bun run src/server.ts",
+    "lint:pine": "bun run src/cli-lint.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
