@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude ↔ TradingView Bridge — Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">CT</div>
+        <div>
+          <h1>Claude ↔ TradingView Bridge</h1>
+          <p>Paste chart context → agent-style Pine draft + lint · demo mode</p>
+        </div>
+      </div>
+      <div class="badge" title="No OAuth · no API keys">
+        <span class="dot"></span>
+        Offline demo
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel" aria-label="Chart context">
+        <div class="panel-header">
+          <h2>Chart context</h2>
+          <div class="toolbar">
+            <button type="button" class="btn btn-ghost" id="btn-sample">Load sample</button>
+            <button type="button" class="btn btn-ghost" id="btn-clear">Clear</button>
+            <button type="button" class="btn btn-primary" id="btn-generate">Generate Pine Script</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="meta-row" id="meta-chips"></div>
+          <textarea
+            class="context"
+            id="context"
+            spellcheck="false"
+            placeholder="Paste TradingView-like chart / indicator context here…"
+          ></textarea>
+          <p style="margin:0;font-size:12px;color:var(--muted)">
+            Happy path: sample is preloaded — hit <strong style="color:var(--text)">Generate Pine Script</strong>.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Generated Pine">
+        <div class="panel-header">
+          <h2>Agent output</h2>
+          <div class="toolbar">
+            <button type="button" class="btn btn-ghost" id="btn-lint" disabled>Re-lint</button>
+            <button type="button" class="btn" id="btn-copy" disabled>Copy</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="agent" id="agent-box">
+            <h3>Agent notes</h3>
+            <ol id="agent-notes">
+              <li>Waiting for generate…</li>
+            </ol>
+          </div>
+          <textarea
+            class="pine"
+            id="pine"
+            spellcheck="false"
+            placeholder="// Generated Pine Script v5 will appear here"
+          ></textarea>
+          <div class="lint" id="lint-box">
+            <div class="lint-head">
+              <span>Lint / compile-style checks</span>
+              <span id="lint-summary" class="status-warn">Idle</span>
+            </div>
+            <ul class="lint-list" id="lint-list" hidden></ul>
+            <div class="empty-lint" id="lint-empty">Run generate to populate lint results.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Bun MVP · mock context only · heuristic Pine (no external LLM)
+    </footer>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
