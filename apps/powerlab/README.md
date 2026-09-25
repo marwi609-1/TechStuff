@@ -15,8 +15,8 @@ python3 -m pytest -q
 ```python
 from powerlab import normalized_power, training_stress_score
 
-power = [250.0] * 3600          # 1 h konstant, 1 Hz
-normalized_power(power)          # 250.0
+power = [250.0] * 3600  # 1 h konstant, 1 Hz
+normalized_power(power)  # 250.0
 training_stress_score(power, ftp=250)  # 100.0
 ```
 
@@ -49,4 +49,24 @@ for d in performance_management_chart(load, ctl0=70, atl0=75):
 
 Fehlende Tage zählen als TSS 0, mehrere Einheiten pro Tag werden summiert.
 
-Annahme Metriken: lückenlose 1-Hz-Reihe. Quellen: Allen & Coggan, *Training and Racing with a Power Meter*; Banister et al. 1975.
+## Critical Power
+
+```python
+from powerlab import fit_cp_2p, fit_cp_3p, mean_max_power
+
+durations = [180, 300, 600, 1200]
+mmp = mean_max_power(ride_1hz, durations)  # oder MMP aus mehreren Fahrten
+fit = fit_cp_2p(durations, mmp)  # method="inverse-time" (Default) | "work-time"
+fit.cp, fit.w_prime, fit.cp_se
+fit.time_to_exhaustion(350)  # s bei 350 W
+```
+
+| Modell | Formel | Hinweis |
+|---|---|---|
+| 2P `inverse-time` | P = CP + W′/t, LS im Leistungsraum | Efforts ~2–20 min |
+| 2P `work-time` | W = CP·t + W′ | gewichtet lange Efforts stärker |
+| 3P Morton | P = CP + W′/(t − k), k = W′/(CP − Pmax) | braucht kurze Efforts für Pmax |
+
+Die Methoden liefern auf realen Daten unterschiedliche CP-Werte (Mattioni Maturana et al. 2018).
+
+Annahme Metriken: lückenlose 1-Hz-Reihe. Quellen: Allen & Coggan, *Training and Racing with a Power Meter*; Banister et al. 1975; Monod & Scherrer 1965; Morton 1996; Jones et al. 2010.

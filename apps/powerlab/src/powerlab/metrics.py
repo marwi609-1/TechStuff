@@ -4,7 +4,7 @@ Annahme: Leistungsdaten liegen als lückenlose 1-Hz-Reihe in Watt vor.
 Resampling und Lückenbehandlung gehören in die Import-Schicht, nicht hierher.
 """
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -65,3 +65,16 @@ def variability_index(power: PowerSeries) -> float:
     if avg == 0:
         raise ValueError("Durchschnittsleistung ist 0, VI undefiniert")
     return normalized_power(arr) / avg
+
+
+def mean_max_power(power: PowerSeries, durations: Iterable[int]) -> NDArray[np.float64]:
+    """Mean Maximal Power: höchste Durchschnittsleistung je Dauer (Sekunden, ganzzahlig)."""
+    arr = _as_power_array(power)
+    cumsum = np.concatenate(([0.0], np.cumsum(arr)))
+    result = []
+    for d in durations:
+        if d != int(d) or not 1 <= d <= arr.size:
+            raise ValueError(f"Dauer muss ganzzahlig in [1, {arr.size}] s liegen, erhalten: {d}")
+        d = int(d)
+        result.append(np.max(cumsum[d:] - cumsum[:-d]) / d)
+    return np.asarray(result, dtype=np.float64)

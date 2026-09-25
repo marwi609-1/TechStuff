@@ -7,11 +7,13 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 - Setup: in Web-Sessions automatisch via `.claude/hooks/session-start.sh` (Repo-Root);
   lokal `pip install -e ".[dev]"`
 - Tests: `python3 -m pytest -q`
-- Lint: `ruff check .` · Format: `ruff format .`
+- Lint: `python3 -m ruff check .` · Format: `python3 -m ruff format .`
+  (immer `python3 -m ruff`: im Container liegt ein älteres globales `ruff` mit anderem Format-Verhalten)
 - Vor jedem Commit: Tests + Lint + Format-Check müssen grün sein.
 
 ## Struktur
-- `src/powerlab/metrics.py` – NP, IF, TSS, VI (Coggan)
+- `src/powerlab/metrics.py` – NP, IF, TSS, VI (Coggan), Mean Maximal Power
+- `src/powerlab/cp.py` – CP-Fit: 2P (`inverse-time` Default, `work-time`), 3P Morton; `CpFit.power_at`/`time_to_exhaustion`
 - `src/powerlab/pmc.py` – CTL/ATL/TSB/Ramp (`method="coggan"|"exponential"`, TSB = Vortagswerte)
 - `tests/` – pytest; jede Metrik braucht analytische Referenzwerte oder ein unabhängiges Orakel
 
@@ -25,11 +27,14 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 - Docstrings, Fehlermeldungen und Kommentare auf Deutsch.
 - Physiologische Modelle (CP, W'bal, PMC) mit Quelle im Docstring (Autor, Jahr).
 
+## Fachliche Stolpersteine
+- MMP ist nicht monoton in der Dauer; garantiert nur MMP(n·d) <= MMP(d).
+
 ## Roadmap
 (Phase 4 des Lernplans – SessionStart-Hook – ist erledigt, liegt außerhalb dieser Liste.)
 1. ✅ Grundgerüst, NP/IF/TSS/VI
 2. ✅ PMC (CTL/ATL/TSB, EWMA 42/7 d)
-3. CP-Fit (Monod-Scherrer 2P, optional Morton 3P)
+3. ✅ CP-Fit (Monod-Scherrer 2P, optional Morton 3P)
 4. W'bal (Skiba 2012 / 2015)
 5. Intervals.icu-Import via MCP, Abgleich mit Intervals-Werten
 6. Wochenreport (HTML)
