@@ -16,6 +16,8 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 - `src/powerlab/cp.py` – CP-Fit: 2P (`inverse-time` Default, `work-time`), 3P Morton; `CpFit.power_at`/`time_to_exhaustion`
 - `src/powerlab/pmc.py` – CTL/ATL/TSB/Ramp (`method="coggan"|"exponential"`, TSB = Vortagswerte)
 - `src/powerlab/intervals.py` – Parser für Intervals-Wellness-JSON, `compare_pmc`
+- `src/powerlab/report.py` – Wochenreport (HTML, Artifact-Format), Heuristik-Hinweise
+- `scripts/weekly_report.py` – Report aus `data/wellness.json` (+ optional `data/activities.json`)
 - `scripts/compare_intervals.py` – Abgleich auf lokalen Exporten in `data/`
 - `tests/` – pytest; jede Metrik braucht analytische Referenzwerte oder ein unabhängiges Orakel
 
@@ -47,4 +49,5 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 3. ✅ CP-Fit (Monod-Scherrer 2P, optional Morton 3P)
 4. W'bal (Skiba 2012 / 2015)
 5. ✅ Intervals.icu-Import via MCP, Abgleich mit Intervals-Werten
-6. Wochenreport (HTML)
+6. ✅ Wochenreport (HTML); läuft montags als Routine und aktualisiert das private Artifact
+   https://claude.ai/artifact/Hp7Jw9fwLh9YqGRf487khJ
