@@ -4,6 +4,8 @@ Analyse-Toolkit für Rad-Leistungsdaten. Nutzer ist mit Trainingswissenschaft ve
 keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen.
 
 ## Befehle (aus `apps/powerlab/`)
+- Setup: in Web-Sessions automatisch via `.claude/hooks/session-start.sh` (Repo-Root);
+  lokal `pip install -e ".[dev]"`
 - Tests: `python3 -m pytest -q`
 - Lint: `ruff check .` · Format: `ruff format .`
 - Vor jedem Commit: Tests + Lint + Format-Check müssen grün sein.
@@ -24,6 +26,7 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 - Physiologische Modelle (CP, W'bal, PMC) mit Quelle im Docstring (Autor, Jahr).
 
 ## Roadmap
+(Phase 4 des Lernplans – SessionStart-Hook – ist erledigt, liegt außerhalb dieser Liste.)
 1. ✅ Grundgerüst, NP/IF/TSS/VI
 2. ✅ PMC (CTL/ATL/TSB, EWMA 42/7 d)
 3. CP-Fit (Monod-Scherrer 2P, optional Morton 3P)
