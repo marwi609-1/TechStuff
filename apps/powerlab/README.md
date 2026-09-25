@@ -76,4 +76,15 @@ Wellness-Export (API-Format) nach `data/wellness.json`, Leistungskurve nach
 `data/` ist gitignored. Intervals rechnet den PMC exponentiell:
 `compare_pmc(parse_wellness(records), method="exponential")` reproduziert CTL/ATL/Ramp exakt.
 
+## Wochenreport
+
+```bash
+python3 scripts/weekly_report.py --week-end 2026-09-20  # Default: letzter Sonntag
+```
+
+Liest `data/wellness.json` (mind. 14, besser 42+ Tage bis zum Sonntag) und optional
+`data/activities.json` (`[{date, name, duration_min, load?, avg_watts?}]`), schreibt
+`data/report.html`. Hinweise (Ramp > 8, Form < −30, frisch +5…+25) sind Praxis-Faustregeln
+ohne belastbare Evidenz und im Report so gekennzeichnet.
+
 Annahme Metriken: lückenlose 1-Hz-Reihe. Quellen: Allen & Coggan, *Training and Racing with a Power Meter*; Banister et al. 1975; Monod & Scherrer 1965; Morton 1996; Jones et al. 2010.
