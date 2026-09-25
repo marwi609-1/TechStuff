@@ -17,6 +17,8 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 - `src/powerlab/pmc.py` – CTL/ATL/TSB/Ramp (`method="coggan"|"exponential"`, TSB = Vortagswerte)
 - `src/powerlab/timeseries.py` – Import-Schicht: lückenhafte Streams → 1 Hz (`to_1hz`, `moving_time_s`; kurze Lücken ≤ 5 s linear, Pausen `drop`/`zero`)
 - `src/powerlab/wbal.py` – W′bal nach Skiba: `differential` (2015, Default), `integral` (2012, τ aus ganzer Einheit)
+- `src/powerlab/intervals_text.py` – Parser für die Textausgabe des Intervals-MCP → JSON (`scripts/intervals_text_to_json.py`)
+- `src/powerlab/plausibility.py` – HR-Load-Gegenrechnung (hrTSS-Prinzip) und What-if für einen Tages-Load (`scripts/check_load.py`)
 - `src/powerlab/intervals.py` – Parser für Intervals-Wellness-JSON, `compare_pmc`
 - `src/powerlab/report.py` – Wochenreport (HTML, Artifact-Format), Heuristik-Hinweise
 - `scripts/weekly_report.py` – Report aus `data/wellness.json` (+ optional `data/activities.json`)
@@ -45,7 +47,11 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
   W′bal wird nicht bei 0 abgeschnitten (negativ = CP/W′ zu niedrig).
 
 ## Datenschutz
-- Echte Trainings-/Gesundheitsdaten nur in `data/` (gitignored), nie committen. Tests nur mit synthetischen Daten.
+- Echte Trainings-/Gesundheitsdaten nur in `data/` (gitignored), nie committen. Tests, Doku und Skill-Beispiele
+  nur mit fiktiven Werten – auch keine echten Aktivitätsnamen, Intervals-IDs oder Tageswerte.
+
+## Skill
+- `/trainingsreport` (`.claude/skills/trainingsreport/`) bündelt den Wochenreport-Workflow inkl. Plausibilitätsprüfung.
 
 ## Roadmap
 (Phase 4 des Lernplans – SessionStart-Hook – ist erledigt, liegt außerhalb dieser Liste.)
