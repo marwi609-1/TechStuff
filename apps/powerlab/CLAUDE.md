@@ -10,6 +10,7 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 
 ## Struktur
 - `src/powerlab/metrics.py` – NP, IF, TSS, VI (Coggan)
+- `src/powerlab/pmc.py` – CTL/ATL/TSB/Ramp (`method="coggan"|"exponential"`, TSB = Vortagswerte)
 - `tests/` – pytest; jede Metrik braucht analytische Referenzwerte oder ein unabhängiges Orakel
 
 ## Konventionen
@@ -17,13 +18,14 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
   Import-Schicht, nicht in die Metrik-Funktionen.
 - Ungültige Eingaben (NaN, negative Watt, FTP <= 0, zu kurze Reihen) -> `ValueError`, nie stillschweigend korrigieren.
 - numpy vektorisiert, keine Python-Schleifen über Samples im Produktivcode (in Test-Orakeln erlaubt).
+  Ausnahme: rekursive Tagesreihen wie der PMC (wenige tausend Werte) dürfen als Schleife laufen.
 - TDD: erst Test mit Referenzwert, dann Implementierung.
 - Docstrings, Fehlermeldungen und Kommentare auf Deutsch.
 - Physiologische Modelle (CP, W'bal, PMC) mit Quelle im Docstring (Autor, Jahr).
 
 ## Roadmap
 1. ✅ Grundgerüst, NP/IF/TSS/VI
-2. PMC (CTL/ATL/TSB, EWMA 42/7 d)
+2. ✅ PMC (CTL/ATL/TSB, EWMA 42/7 d)
 3. CP-Fit (Monod-Scherrer 2P, optional Morton 3P)
 4. W'bal (Skiba 2012 / 2015)
 5. Intervals.icu-Import via MCP, Abgleich mit Intervals-Werten

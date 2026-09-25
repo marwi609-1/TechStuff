@@ -6,10 +6,13 @@ from powerlab.metrics import (
     training_stress_score,
     variability_index,
 )
+from powerlab.pmc import PmcDay, performance_management_chart
 
 __all__ = [
+    "PmcDay",
     "intensity_factor",
     "normalized_power",
+    "performance_management_chart",
     "training_stress_score",
     "variability_index",
 ]
