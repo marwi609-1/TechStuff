@@ -25,6 +25,12 @@ def _as_power_array(power: PowerSeries) -> NDArray[np.float64]:
     return arr
 
 
+def _rolling_means(arr: NDArray[np.float64], window: int) -> NDArray[np.float64]:
+    """Mittelwerte aller vollständigen Fenster der Länge ``window`` (via kumulierter Summe)."""
+    cumsum = np.concatenate(([0.0], np.cumsum(arr)))
+    return (cumsum[window:] - cumsum[:-window]) / window
+
+
 def _check_ftp(ftp: float) -> None:
     if not np.isfinite(ftp) or ftp <= 0:
         raise ValueError(f"FTP muss positiv und endlich sein, erhalten: {ftp}")
@@ -39,8 +45,7 @@ def normalized_power(power: PowerSeries) -> float:
     arr = _as_power_array(power)
     if arr.size < NP_WINDOW_S:
         raise ValueError(f"Mindestens {NP_WINDOW_S} s Daten nötig, erhalten: {arr.size}")
-    cumsum = np.concatenate(([0.0], np.cumsum(arr)))
-    rolling = (cumsum[NP_WINDOW_S:] - cumsum[:-NP_WINDOW_S]) / NP_WINDOW_S
+    rolling = _rolling_means(arr, NP_WINDOW_S)
     return float(np.mean(rolling**4) ** 0.25)
 
 
@@ -70,11 +75,10 @@ def variability_index(power: PowerSeries) -> float:
 def mean_max_power(power: PowerSeries, durations: Iterable[int]) -> NDArray[np.float64]:
     """Mean Maximal Power: höchste Durchschnittsleistung je Dauer (Sekunden, ganzzahlig)."""
     arr = _as_power_array(power)
-    cumsum = np.concatenate(([0.0], np.cumsum(arr)))
     result = []
     for d in durations:
-        if d != int(d) or not 1 <= d <= arr.size:
-            raise ValueError(f"Dauer muss ganzzahlig in [1, {arr.size}] s liegen, erhalten: {d}")
-        d = int(d)
-        result.append(np.max(cumsum[d:] - cumsum[:-d]) / d)
+        valid = isinstance(d, int | float | np.number) and np.isfinite(d) and d == int(d)
+        if not valid or not 1 <= d <= arr.size:
+            raise ValueError(f"Dauer muss ganzzahlig in [1, {arr.size}] s liegen, erhalten: {d!r}")
+        result.append(np.max(_rolling_means(arr, int(d))))
     return np.asarray(result, dtype=np.float64)

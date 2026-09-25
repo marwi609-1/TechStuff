@@ -28,6 +28,8 @@ Method2p = Literal["inverse-time", "work-time"]
 # Suchbereich für Mortons k (s). k → 0⁻ entspricht dem 2P-Modell (Pmax → ∞).
 _K_MIN, _K_MAX = -600.0, -1e-3
 _GOLDEN = (math.sqrt(5) - 1) / 2
+# Liegt das Optimum innerhalb von 1 % am Rand, gilt k als nicht bestimmt.
+_BOUNDARY_TOL = 0.99
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,12 +53,14 @@ class CpFit:
 
     def power_at(self, t: float) -> float:
         """Vorhergesagte Maximalleistung für die Dauer t (s)."""
-        if t <= 0:
-            raise ValueError(f"Dauer muss positiv sein, erhalten: {t}")
+        if not math.isfinite(t) or t <= 0:
+            raise ValueError(f"Dauer muss positiv und endlich sein, erhalten: {t}")
         return self.cp + self.w_prime / (t - self._k)
 
     def time_to_exhaustion(self, power: float) -> float:
         """Vorhergesagte Zeit bis zur Erschöpfung bei konstanter Leistung (s)."""
+        if not math.isfinite(power):
+            raise ValueError(f"Leistung muss endlich sein, erhalten: {power}")
         if power <= self.cp:
             return math.inf
         if self.pmax is not None and power >= self.pmax:
@@ -107,9 +111,10 @@ def _check_plausible(cp: float, w_prime: float) -> None:
         )
 
 
-def _rmse(t: NDArray[np.float64], p: NDArray[np.float64], fit: CpFit) -> float:
-    predicted = np.array([fit.power_at(ti) for ti in t])
-    return float(np.sqrt(np.mean((p - predicted) ** 2)))
+def _rmse(
+    t: NDArray[np.float64], p: NDArray[np.float64], cp: float, w_prime: float, k: float = 0.0
+) -> float:
+    return float(np.sqrt(np.mean((p - cp - w_prime / (t - k)) ** 2)))
 
 
 def fit_cp_2p(
@@ -127,8 +132,7 @@ def fit_cp_2p(
     else:
         raise ValueError(f"Unbekannte Methode: {method!r} (erlaubt: 'inverse-time', 'work-time')")
     _check_plausible(cp, w_prime)
-    fit = CpFit(f"2p-{method}", cp, w_prime, None, 0.0, cp_se, w_se)
-    return CpFit(fit.model, cp, w_prime, None, _rmse(t, p, fit), cp_se, w_se)
+    return CpFit(f"2p-{method}", cp, w_prime, None, _rmse(t, p, cp, w_prime), cp_se, w_se)
 
 
 def _fit_given_k(
@@ -166,9 +170,13 @@ def fit_cp_3p(durations: ArrayLike | Sequence[float], powers: ArrayLike | Sequen
             d = a + _GOLDEN * (b - a)
             fd = _fit_given_k(t, p, d)[2]
     k = (a + b) / 2
+    if not _K_MIN * _BOUNDARY_TOL < k < _K_MAX / _BOUNDARY_TOL:
+        raise ValueError(
+            f"3P-Fit am Rand des Suchbereichs (k = {k:.3g} s): Pmax nicht bestimmbar – "
+            "kurze Efforts (< 60 s) ergänzen oder 2P-Modell verwenden"
+        )
 
     cp, w_prime, _ = _fit_given_k(t, p, k)
     _check_plausible(cp, w_prime)
     pmax = cp - w_prime / k
-    fit = CpFit("3p-morton", cp, w_prime, pmax, 0.0, None, None)
-    return CpFit("3p-morton", cp, w_prime, pmax, _rmse(t, p, fit), None, None)
+    return CpFit("3p-morton", cp, w_prime, pmax, _rmse(t, p, cp, w_prime, k), None, None)

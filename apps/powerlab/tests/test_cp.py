@@ -167,3 +167,27 @@ def test_2p_unknown_method_raises():
 def test_3p_needs_three_points():
     with pytest.raises(ValueError):
         fit_cp_3p([60, 300], [500.0, 350.0])
+
+
+# --- Review-Befunde -------------------------------------------------------------
+
+
+def test_3p_rejects_boundary_solution():
+    # Rein hyperbolische Daten: k läuft gegen 0, Pmax gegen unendlich -> nicht bestimmbar
+    with pytest.raises(ValueError, match="Pmax"):
+        fit_cp_3p(DUR_2P, hyperbolic(DUR_2P))
+
+
+@pytest.mark.parametrize("bad", [math.nan, math.inf])
+def test_predictions_reject_non_finite_input(bad):
+    fit = fit_cp_2p(DUR_2P, hyperbolic(DUR_2P))
+    with pytest.raises(ValueError):
+        fit.power_at(bad)
+    with pytest.raises(ValueError):
+        fit.time_to_exhaustion(bad)
+
+
+@pytest.mark.parametrize("bad", [math.inf, math.nan, "60"])
+def test_mmp_non_finite_duration_raises_value_error(bad):
+    with pytest.raises(ValueError):
+        mean_max_power([200.0] * 600, [bad])

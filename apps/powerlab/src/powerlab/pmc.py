@@ -30,7 +30,7 @@ class PmcDay:
     tsb: float
     """Form am Morgen: CTL_{t-1} − ATL_{t-1} (TrainingPeaks-Konvention)."""
     ramp: float | None
-    """CTL_t − CTL_{t-7}; None, solange keine 7 Tage Vorlauf vorhanden sind."""
+    """CTL_t − CTL_{t-7}; ab dem 7. Tag verfügbar (CTL_{t-7} = ``ctl0``), davor None."""
 
 
 def _smoothing_factor(tau_days: float, method: Method) -> float:
@@ -89,12 +89,14 @@ def performance_management_chart(
     # Rekursiv und nur wenige tausend Tage: Python-Schleife statt numpy.
     result: list[PmcDay] = []
     ctl, atl = float(ctl0), float(atl0)
+    ctl_history = [ctl]  # ctl_history[i] = CTL am Vortag von Tag i
     for i in range((last - first).days + 1):
         day = first + timedelta(days=i)
         tss = totals.get(day, 0.0)
         tsb = ctl - atl
         ctl += k_ctl * (tss - ctl)
         atl += k_atl * (tss - atl)
-        ramp = ctl - result[i - RAMP_WINDOW_D].ctl if i >= RAMP_WINDOW_D else None
+        ctl_history.append(ctl)
+        ramp = ctl - ctl_history[i + 1 - RAMP_WINDOW_D] if i + 1 >= RAMP_WINDOW_D else None
         result.append(PmcDay(day=day, tss=tss, ctl=ctl, atl=atl, tsb=tsb, ramp=ramp))
     return result

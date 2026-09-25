@@ -82,9 +82,15 @@ def test_tsb_uses_previous_day():
 
 def test_ramp_rate():
     result = performance_management_chart(days(30, 100.0))
-    assert all(r.ramp is None for r in result[:7])
+    assert all(r.ramp is None for r in result[:6])
     for t in range(7, len(result)):
         assert result[t].ramp == pytest.approx(result[t].ctl - result[t - 7].ctl)
+
+
+def test_ramp_on_day_seven_uses_seed():
+    # ctl0 ist CTL am Vortag des ersten Eintrags = CTL_{t-7} für den 7. Tag
+    result = performance_management_chart(days(10, 100.0), ctl0=40.0, atl0=40.0)
+    assert result[6].ramp == pytest.approx(result[6].ctl - 40.0)
 
 
 def test_seeded_steady_state_stays_constant():
