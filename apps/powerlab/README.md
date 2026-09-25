@@ -69,6 +69,21 @@ fit.time_to_exhaustion(350)  # s bei 350 W
 
 Die Methoden liefern auf realen Daten unterschiedliche CP-Werte (Mattioni Maturana et al. 2018).
 
+## Import und W′bal
+
+```python
+from powerlab import to_1hz, moving_time_s, training_stress_score, w_prime_balance
+
+power = to_1hz(time_s, watts)  # kurze Lücken interpoliert, Pausen entfernt
+training_stress_score(power, ftp=235)  # TSS auf Bewegungszeit (wie Intervals)
+wbal = w_prime_balance(power, cp=240, w_prime=20_000)  # J je Sekunde
+```
+
+| W′bal-Methode | Modell |
+|---|---|
+| `differential` (Default) | P > CP: −(P − CP); P ≤ CP: +(W′ − W′bal)·(CP − P)/W′ (Skiba et al. 2015) |
+| `integral` | W′ − Σ (P − CP)·e^(−(t−u)/τ), τ = 546·e^(−0,01·D_CP) + 316 (Skiba et al. 2012) |
+
 ## Abgleich mit Intervals.icu
 
 Wellness-Export (API-Format) nach `data/wellness.json`, Leistungskurve nach

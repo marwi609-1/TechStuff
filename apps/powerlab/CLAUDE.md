@@ -15,6 +15,8 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 - `src/powerlab/metrics.py` – NP, IF, TSS, VI (Coggan), Mean Maximal Power
 - `src/powerlab/cp.py` – CP-Fit: 2P (`inverse-time` Default, `work-time`), 3P Morton; `CpFit.power_at`/`time_to_exhaustion`
 - `src/powerlab/pmc.py` – CTL/ATL/TSB/Ramp (`method="coggan"|"exponential"`, TSB = Vortagswerte)
+- `src/powerlab/timeseries.py` – Import-Schicht: lückenhafte Streams → 1 Hz (`to_1hz`, `moving_time_s`; kurze Lücken ≤ 5 s linear, Pausen `drop`/`zero`)
+- `src/powerlab/wbal.py` – W′bal nach Skiba: `differential` (2015, Default), `integral` (2012, τ aus ganzer Einheit)
 - `src/powerlab/intervals.py` – Parser für Intervals-Wellness-JSON, `compare_pmc`
 - `src/powerlab/report.py` – Wochenreport (HTML, Artifact-Format), Heuristik-Hinweise
 - `scripts/weekly_report.py` – Report aus `data/wellness.json` (+ optional `data/activities.json`)
@@ -39,6 +41,9 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 - Intervals-Training-Load basiert auf Bewegungszeit; Streams haben Lücken (Auto-Pause).
 - Das Intervals-MCP liefert Streams nur als Zusammenfassung (erste/letzte 5 Werte) – kein NP-Abgleich auf Sample-Ebene möglich.
 
+- Skiba-Integralmodell ist nicht kausal (τ aus der gesamten Einheit) und erholt auch während Arbeit über CP;
+  W′bal wird nicht bei 0 abgeschnitten (negativ = CP/W′ zu niedrig).
+
 ## Datenschutz
 - Echte Trainings-/Gesundheitsdaten nur in `data/` (gitignored), nie committen. Tests nur mit synthetischen Daten.
 
@@ -47,7 +52,7 @@ keine vereinfachenden Erklärungen, Modellannahmen und Quellen explizit benennen
 1. ✅ Grundgerüst, NP/IF/TSS/VI
 2. ✅ PMC (CTL/ATL/TSB, EWMA 42/7 d)
 3. ✅ CP-Fit (Monod-Scherrer 2P, optional Morton 3P)
-4. W'bal (Skiba 2012 / 2015)
+4. ✅ W'bal (Skiba 2012 / 2015)
 5. ✅ Intervals.icu-Import via MCP, Abgleich mit Intervals-Werten
 6. ✅ Wochenreport (HTML); läuft montags als Routine und aktualisiert das private Artifact
    https://claude.ai/artifact/Hp7Jw9fwLh9YqGRf487khJ
