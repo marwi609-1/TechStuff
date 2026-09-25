@@ -69,4 +69,11 @@ fit.time_to_exhaustion(350)  # s bei 350 W
 
 Die Methoden liefern auf realen Daten unterschiedliche CP-Werte (Mattioni Maturana et al. 2018).
 
+## Abgleich mit Intervals.icu
+
+Wellness-Export (API-Format) nach `data/wellness.json`, Leistungskurve nach
+`data/power_curve_ride.json` legen, dann `python3 scripts/compare_intervals.py`.
+`data/` ist gitignored. Intervals rechnet den PMC exponentiell:
+`compare_pmc(parse_wellness(records), method="exponential")` reproduziert CTL/ATL/Ramp exakt.
+
 Annahme Metriken: lückenlose 1-Hz-Reihe. Quellen: Allen & Coggan, *Training and Racing with a Power Meter*; Banister et al. 1975; Monod & Scherrer 1965; Morton 1996; Jones et al. 2010.
