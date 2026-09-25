@@ -15,7 +15,7 @@ Zwei Modelle nach Skiba:
   erholt damit bereits während langer Belastungen über CP.
 
 - ``differential`` (Skiba, Fulford, Clarke, Vanhatalo & Jones 2015,
-  Med Sci Sports Exerc 47(9):1932–1940)::
+  Eur J Appl Physiol 115(4):703–713)::
 
       P > CP:  dW′bal/dt = −(P − CP)
       P ≤ CP:  dW′bal/dt = (W′ − W′bal) · (CP − P) / W′
