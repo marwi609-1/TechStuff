@@ -45,7 +45,24 @@ Arbeite in `apps/powerlab/`. Falls `import powerlab` fehlschlägt: `pip install 
    ```
    Ein `ValueError` (Lücke, kein Sonntag, < 14 Tage) weist auf ein Datenproblem hin: Ursache in
    den Daten beheben, nicht im Code.
-6. **Veröffentlichen** (außer bei `--no-publish`): `<data-dir>/report.html` ins Scratchpad als
+6. **Daten plausibilisieren.** Der Report übernimmt die Intervals-Zahlen unverändert. Ein
+   einzelner Ausreißer kann Ramp-Rate und Form aber so stark verschieben, dass der Hinweis im
+   Report irreführt – z. B. eine durch Pulsartefakte mehr als verdoppelte HR-Load, die die
+   Ramp-Rate über die Faustregel hebt.
+   Prüfe deshalb, bevor du das Fazit schreibst:
+   - **HR-basierte Loads:** Für jede Aktivität der Woche mit Load ≥ 50 und ohne `avg_watts`
+     `get_activity_details` abrufen (Ø-HR, LTHR, Moving Time) und
+     ```bash
+     python3 scripts/check_load.py --date <tag> --load <load> --avg-hr <hr> --lthr <lthr> \
+         --moving-time <s> --week-end <week_end> --data-dir <data-dir>
+     ```
+     ausführen. Bei „AUFFÄLLIG“ zusätzlich auf Artefakt-Indizien achten (Max-HR nahe oder über
+     dem sonstigen Maximum, IF-Angabe unplausibel zur Ø-HR).
+   - **Load ohne benannte Aktivität:** Vergleiche `ctlLoad` je Tag mit der Summe der Loads in
+     `activities.json`. Tage mit Load, aber ohne passende Aktivität (unbenannte Einträge,
+     andere Sportarten) im Fazit kurz nennen, damit die Aktivitätstabelle nicht vollständig
+     wirkt, wo sie es nicht ist.
+7. **Veröffentlichen** (außer bei `--no-publish`): `<data-dir>/report.html` ins Scratchpad als
    `powerlab-wochenreport.html` kopieren, das Artifact
    `https://claude.ai/artifact/Hp7Jw9fwLh9YqGRf487khJ` mit `action: "read"` lesen und dann mit
    `url` = dieser URL und `file_path` = der Kopie publishen. So bleibt der Link stabil; ohne
@@ -53,14 +70,21 @@ Arbeite in `apps/powerlab/`. Falls `import powerlab` fehlschlägt: `pip install 
 
 ## Ergebnis melden
 
-3–5 Zeilen, z. B.:
+3–6 Zeilen: Kennzahlen, Hinweise, Datenauffälligkeiten mit What-if, Link. Beispiel:
 
-> **KW 38** (14.–20.09.): Load 695 (Vorwoche 127), CTL 43,4 (+10,0), Form Montagmorgen −22.
-> Hinweis: Ramp-Rate +10,0 über der Faustregel von 8.
+> **KW 12** (16.–22.03.): Load 520 (Vorwoche 380), CTL 51,2 (+9,1), Form Montagmorgen −24.
+> Hinweis: Ramp-Rate +9,1 über der Faustregel von 8.
+> **Datenqualität:** HR-Load 310 am 19.03. unplausibel (Ø-HR 112 bei LTHR 165 → ≈ 160,
+> Faktor 1,9; vermutlich Pulsartefakte). Mit ≈ 160: CTL 47,6, Ramp +5,5, Form −12 – der
+> Ramp-Hinweis entfiele. Load am 17.03. (40) ohne benannte Aktivität.
 > Report: https://claude.ai/artifact/Hp7Jw9fwLh9YqGRf487khJ
+
+(Fiktive Zahlen.)
 
 Die Hinweise sind Praxis-Faustregeln ohne belastbare Evidenz (steht so auch im Report).
 Formuliere sie als Beobachtung, nicht als Trainingsempfehlung oder Warnung vor Verletzung.
+Datenauffälligkeiten sind Verdachtsmomente: Nenne Befund und Auswirkung, ändere aber keine
+Werte im Report und korrigiere nichts in Intervals – das entscheidet der Nutzer.
 
 ## Grenzen und Regeln
 

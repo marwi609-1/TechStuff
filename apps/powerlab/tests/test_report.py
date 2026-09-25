@@ -117,7 +117,7 @@ def test_flag_detraining():
 def test_parse_activities():
     acts = parse_activities(
         [
-            {"date": "2026-09-17", "name": "Flamingos", "duration_min": 311, "load": 414},
+            {"date": "2026-09-17", "name": "Langer Ritt", "duration_min": 240, "load": 210},
             {"date": "2026-09-15", "name": "Annecy", "duration_min": 195, "load": None},
         ]
     )
